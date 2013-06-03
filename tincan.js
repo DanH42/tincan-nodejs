@@ -43,7 +43,7 @@ var Tincan = function(appName, appID, appKey){
 					if(callback)
 						callback(null, obj);
 				}catch(e){
-					console.log(e);
+					console.log(data);
 					if(callback)
 						callback("SERVER_ERROR", null);
 				}
@@ -89,9 +89,9 @@ var Tincan = function(appName, appID, appKey){
 		this.makeRequest("find", query, function(err, res){
 			if(!err && res){
 				if(callback)
-					callback(res.error);
-			}else
-				throw new Error(err);
+					callback(res.error, res.data);
+			}else if(callback)
+				callback(err, null);
 		});
 	}
 
@@ -109,8 +109,8 @@ var Tincan = function(appName, appID, appKey){
 			if(!err && res){
 				if(callback)
 					callback(res.error);
-			}else
-				throw new Error(err);
+			}else if(callback)
+				callback(err, null);
 		});
 	}
 
@@ -128,8 +128,8 @@ var Tincan = function(appName, appID, appKey){
 			if(!err && res){
 				if(callback)
 					callback(res.error);
-			}else
-				throw new Error(err);
+			}else if(callback)
+				callback(err, null);
 		});
 	}
 
@@ -156,8 +156,8 @@ var Tincan = function(appName, appID, appKey){
 			if(!err && res){
 				if(callback)
 					callback(res.error);
-			}else
-				throw new Error(err);
+			}else if(callback)
+				callback(err, null);
 		});
 	}
 }
