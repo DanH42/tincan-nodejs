@@ -1,0 +1,15 @@
+{
+	"name": "tincan",
+	"version": "0.1.0",
+	"author": "Dan Hlavenka <dan@xd6.co>",
+	"description": "Read and write data using the tincan.me API",
+	"main": "./tincan.js",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/DanH42/tincan-nodejs.git"
+	},
+	"license": "MIT",
+	"engines": {
+		"node": ">=0.4"
+	}
+}
