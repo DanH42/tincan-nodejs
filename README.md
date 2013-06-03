@@ -1,7 +1,7 @@
 tincan-nodejs
 =============
 
-A thin wrapper for reading and writing data using the tincan.me API
+A thin wrapper for reading and writing data using the tincan.me API using Node.JS
 
 Installation
 ------------
@@ -14,7 +14,7 @@ Setup
 To use this package, you'll need a TinCan developer account (currently invite-only). Once you've got one, supply your credentials like so:
 
     var tincan = require("tincan");
-    var example-db = new tincan("example", "5e6a7e38c97b", "81aca0b3a200dd52bda8bca268ee68a8");
+    var exampleDB = new tincan("example", "5e6a7e38c97b", "81aca0b3a200dd52bda8bca268ee68a8");
 
 In this case, the application is named `"example"`, the app ID is `5e6a7e38c97b`, and its key is `81aca0b3a200dd52bda8bca268ee68a8`.
 
@@ -39,13 +39,13 @@ Example
 
     // Initialize the API
     var tincan = require("tincan");
-    var example-db = new tincan("example", "5e6a7e38c97b", "81aca0b3a200dd52bda8bca268ee68a8");
+    var exampleDB = new tincan("example", "5e6a7e38c97b", "81aca0b3a200dd52bda8bca268ee68a8");
     
     // Insert some data
-    example-db.insert({name: "John Mitchell", image: "http://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50", age: 37, online: true});
+    exampleDB.insert({name: "John Mitchell", image: "http://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50", age: 37, online: true});
     
     // Fetch all online users
-    example-db.find({online: true}, function(err, users){
+    exampleDB.find({online: true}, function(err, users){
     	if(!err && users){
     		for(var i in users)
     			console.log(users[i].name);
@@ -54,7 +54,7 @@ Example
     });
     
     // Change some data
-    example-db.update({name: "John Mitchell"}, {$set: {online: false}});
+    exampleDB.update({name: "John Mitchell"}, {$set: {online: false}});
     
     // Remove a document
-    example-db.remove({name: "John Mitchell"});
+    exampleDB.remove({name: "John Mitchell"});
