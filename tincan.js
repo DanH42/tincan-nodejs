@@ -136,7 +136,7 @@ var Tincan = function(appName, appID, appKey){
 	this.update = function(search, query, callback){
 		if(search){
 			if(typeof search != "string")
-				query = JSON.stringify(query);
+				search = JSON.stringify(search);
 		}else{
 			if(callback)
 				callback("NO_DATA", null);
