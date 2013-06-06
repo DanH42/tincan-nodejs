@@ -18,7 +18,7 @@ To use this package, you'll need a TinCan developer account (currently invite-on
 
 In this case, the application is named `"example"`, the app ID is `5e6a7e38c97b`, and its key is `81aca0b3a200dd52bda8bca268ee68a8`.
 
-Once you've done that, a request will be made asynchronously to validate your credentials with the server. If anything goes wrong, an error will be thrown. The constructor also takes an optional fourth callback parameter with a single  `error` attribute, called once the API is ready. In the event of an error, the callback will be called immediately before the error is thrown, and will contain the error message.
+Once you've done that, a request will be made asynchronously to validate your credentials with the server. If anything goes wrong, an error will be thrown. The constructor also takes an optional fourth callback parameter that gives a single  `error` argument, called once the API is ready. In the event of an error, the callback will be called immediately before the error is thrown, and will contain the error message. However, assuming there are no problems, you can use the API immediately, even before the callback fires.
 
 Usage
 -----
