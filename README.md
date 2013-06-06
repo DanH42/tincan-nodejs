@@ -33,7 +33,7 @@ Their syntax is as follows:
 - `tincan.update(search, query, [callback])`
 - `tincan.user(query, callback)`
 
-All queries can be either objects or JSON-encoded strings. Callbacks follow the standard format of `(err, data)`.
+All queries can be either objects or JSON-encoded strings (which will be passed along as-is). Callbacks follow the standard format of `(err, data)`.
 
 Example
 -------
