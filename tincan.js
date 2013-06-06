@@ -1,13 +1,17 @@
 var http = require("http");
 
-var Tincan = function(appName, appID, appKey){
+var Tincan = function(appName, appID, appKey, cb){
 
 	// Make sure all our inputs are correct
-	if(!appName || !appID || !appKey)
+	if(!appName || !appID || !appKey){
+		if(cb)
+			cb.call(this, "Application name, ID, and key are all required.");
 		throw new Error("Application name, ID, and key are all required.");
-	else if(typeof appName != "string" || typeof appID != "string" || typeof appKey != "string")
+	}else if(typeof appName != "string" || typeof appID != "string" || typeof appKey != "string"){
+		if(cb)
+			cb.call(this, "Application name, ID, and key must all be strings.");
 		throw new Error("Application name, ID, and key must all be strings.");
-	else{
+	}else{
 		this.appName = appName.toLowerCase();
 		this.appID = appID;
 		this.appKey = appKey;
@@ -17,7 +21,7 @@ var Tincan = function(appName, appID, appKey){
 		// Don't try sending a request unless we have credentials
 		if(!this.appName || !this.appID || !this.appKey){
 			if(callback)
-				callback("NO_CREDENTIALS", null);
+				callback.call(this, "NO_CREDENTIALS", null);
 			return;
 		}
 
@@ -30,24 +34,24 @@ var Tincan = function(appName, appID, appKey){
 		};
 
 		var req = http.request(options, function(res){
-			var data = "";
-			res.setEncoding('utf8');
+			if(callback){
+				var data = "";
+				res.setEncoding('utf8');
 
-			res.on('data', function(chunk){
-				data += chunk;
-			});
+				res.on('data', function(chunk){
+					data += chunk;
+				});
 
-			res.on('end', function(){
-				try{
-					var obj = JSON.parse(data);
-					if(callback)
-						callback(null, obj);
-				}catch(e){
-					console.log(data);
-					if(callback)
-						callback("SERVER_ERROR", null);
-				}
-			});
+				res.on('end', function(){
+					try{
+						var obj = JSON.parse(data);
+						callback.call(this, null, obj);
+					}catch(e){
+						console.log(data);
+						callback.call(this, "SERVER_ERROR", null);
+					}
+				});
+			}
 		});
 
 		req.on('error', function(err){
@@ -67,13 +71,22 @@ var Tincan = function(appName, appID, appKey){
 				this.appID = null;
 				this.appKey = null;
 
-				if(res.error)
+				if(res.error){
+					if(cb)
+						cb.call(this, res.error);
 					throw new Error(res.error);
-				else
+				}else{
+					if(cb)
+						cb.call(this, "SERVER_ERROR");
 					throw new Error("SERVER_ERROR");
-			}
-		}else
+				}
+			}else if(cb)
+				cb.call(this, null);
+		}else{
+			if(cb)
+				cb.call(this, err);
 			throw new Error(err);
+		}
 	});
 
 	this.find = function(query, callback){
@@ -83,15 +96,16 @@ var Tincan = function(appName, appID, appKey){
 				query = null;
 			}else if(typeof query != "string")
 				query = JSON.stringify(query);
-		}else
-			query = null;
+		}else{
+			callback.call(this, "NO_DATA", null);
+			return;
+		}
 
 		this.makeRequest("find", query, function(err, res){
 			if(!err && res){
-				if(callback)
-					callback(res.error, res.data);
-			}else if(callback)
-				callback(err, null);
+				callback.call(this, res.error, res.data);
+			}else
+				callback.call(this, err, null);
 		});
 	}
 
@@ -101,16 +115,16 @@ var Tincan = function(appName, appID, appKey){
 				query = JSON.stringify(query);
 		}else{
 			if(callback)
-				callback("NO_DATA", null);
+				callback.call(this, "NO_DATA", null);
 			return;
 		}
 
 		this.makeRequest("insert", query, function(err, res){
 			if(!err && res){
 				if(callback)
-					callback(res.error);
+					callback.call(this, res.error);
 			}else if(callback)
-				callback(err, null);
+				callback.call(this, err, null);
 		});
 	}
 
@@ -120,16 +134,16 @@ var Tincan = function(appName, appID, appKey){
 				query = JSON.stringify(query);
 		}else{
 			if(callback)
-				callback("NO_DATA", null);
+				callback.call(this, "NO_DATA", null);
 			return;
 		}
 
 		this.makeRequest("remove", query, function(err, res){
 			if(!err && res){
 				if(callback)
-					callback(res.error);
+					callback.call(this, res.error);
 			}else if(callback)
-				callback(err, null);
+				callback.call(this, err, null);
 		});
 	}
 
@@ -139,14 +153,14 @@ var Tincan = function(appName, appID, appKey){
 				search = JSON.stringify(search);
 		}else{
 			if(callback)
-				callback("NO_DATA", null);
+				callback.call(this, "NO_DATA", null);
 			return;
 		}if(query){
 			if(typeof query != "string")
 				query = JSON.stringify(query);
 		}else{
 			if(callback)
-				callback("NO_DATA", null);
+				callback.call(this, "NO_DATA", null);
 			return;
 		}
 
@@ -155,9 +169,32 @@ var Tincan = function(appName, appID, appKey){
 		this.makeRequest("update", queryString, function(err, res){
 			if(!err && res){
 				if(callback)
-					callback(res.error);
+					callback.call(this, res.error);
 			}else if(callback)
-				callback(err, null);
+				callback.call(this, err, null);
+		});
+	}
+
+	this.user = function(query, callback){
+		if(query){
+			if(typeof query != "string"){
+				if(!query.id && !query.token){
+					callback.call(this, "BAD_DATA", null);
+					return;
+				}
+
+				query = JSON.stringify(query);
+			}
+		}else{
+			callback.call(this, "NO_DATA", null);
+			return;
+		}
+
+		this.makeRequest("user", query, function(err, res){
+			if(!err && res)
+				callback.call(this, res.error, res.data);
+			else
+				callback.call(this, err, null);
 		});
 	}
 }

@@ -1,6 +1,6 @@
 {
 	"name": "tincan",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"author": "Dan Hlavenka <dan@xd6.co>",
 	"description": "Read and write data using the tincan.me API",
 	"main": "./tincan.js",
