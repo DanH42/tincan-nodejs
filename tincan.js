@@ -1,4 +1,5 @@
-var http = require("http");
+var https = require("https"),
+    ca = null;
 
 var Tincan = function(appName, appID, appKey, cb){
 
@@ -17,6 +18,13 @@ var Tincan = function(appName, appID, appKey, cb){
 		this.appKey = appKey;
 	}
 
+	if(!ca){
+		var path = require('path'),
+		    fs = require('fs');
+		ca = [fs.readFileSync(path.join(__dirname, "ca.pem")),
+			fs.readFileSync(path.join(__dirname, "sub.class1.server.ca.pem"))];
+	}
+
 	this.makeRequest = function(type, data, callback){
 		// Don't try sending a request unless we have credentials
 		if(!this.appName || !this.appID || !this.appKey){
@@ -27,13 +35,15 @@ var Tincan = function(appName, appID, appKey, cb){
 
 		var options = {
 			hostname: 'apps.tincan.me',
-			port: 80,
+			port: 443	,
 			path: '/' + appName + '/' + type,
 			auth: this.appID + ':' + this.appKey,
-			method: 'POST'
+			method: 'POST',
+			ca: ca // Node 0.10.x will throw UNABLE_TO_VERIFY_LEAF_SIGNATURE without this
+			// See https://github.com/kenperkins/winston-papertrail/issues/6
 		};
 
-		var req = http.request(options, function(res){
+		var req = https.request(options, function(res){
 			if(callback){
 				var data = "";
 				res.setEncoding('utf8');
@@ -55,7 +65,7 @@ var Tincan = function(appName, appID, appKey, cb){
 		});
 
 		req.on('error', function(err){
-			callback.call(err, null);
+			callback.call(this, err, null);
 		});
 
 		if(data)
